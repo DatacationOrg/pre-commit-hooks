@@ -1,0 +1,5 @@
+- id: check-uv-lock-vulnerabilities
+  name: Check uv.lock for vulnerabilities
+  entry: hooks/check-uv-lock-vulnerabilities.sh
+  language: system
+  stages: [pre-commit]
