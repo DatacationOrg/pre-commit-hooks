@@ -20,8 +20,11 @@ if [[ -f "$TIMESTAMP_FILE" ]]; then
     fi
 fi
 
+# Directory of this script
+HOOK_DIR="$(dirname "${BASH_SOURCE[0]}")"
+
 # Run the original hook
-hooks/check-uv-lock-vulnerabilities.sh
+"$HOOK_DIR/check-uv-lock-vulnerabilities.sh"
 
 # Update timestamp
 date +%s > "$TIMESTAMP_FILE"
