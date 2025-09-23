@@ -13,7 +13,7 @@ if [[ -f "$REQ_FILE" ]]; then
 fi
 
 # Run pip-audit
-pip-audit -r "$REQ_FILE" --progress-spinner on
+uvx pip-audit -r "$REQ_FILE" --progress-spinner on
 
 # Remove temporary requirements file
 rm "$REQ_FILE"
