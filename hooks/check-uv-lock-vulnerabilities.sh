@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # Name of temporary requirements file
 REQ_FILE="requirements-check-uv-lock-vulnerabilities.txt"
+
+# Define cleanup function
+cleanup() {
+    if [[ -f "$REQ_FILE" ]]; then
+        rm -f "$REQ_FILE"
+    fi
+}
+
+# Ensure cleanup runs on script exit, error, or interrupt
+trap cleanup EXIT
 
 # Create a temporary requirements file
 uv export --format=requirements-txt > "$REQ_FILE"
@@ -14,6 +24,3 @@ fi
 
 # Run pip-audit
 uvx pip-audit -r "$REQ_FILE" --progress-spinner on
-
-# Remove temporary requirements file
-rm "$REQ_FILE"
