@@ -1,0 +1,22 @@
+[project]
+name = "pre-commit-hooks"
+version = "0.1.0"
+description = "Custom pre-commit hooks for checking Python dependency vulnerabilities with uv and pip-audit."
+authors = [{ name = "Datacation", email = "info@datacation.com" }]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["pip-audit"]
+
+[project.urls]
+Homepage = "https://github.com/datacation/pre-commit-hooks"
+
+[project.scripts]
+check-uv-lock-vulnerabilities = "hooks.check_uv_lock_vulnerabilities:main"
+check-uv-lock-vulnerabilities-daily = "hooks.check_uv_lock_vulnerabilities_daily:main"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["hooks"]
