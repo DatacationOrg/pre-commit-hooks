@@ -37,7 +37,11 @@ def check_vulnerabilities():
             return 0
         finally:
             if os.path.exists(req_file_path):
-                os.remove(req_file_path)
+                try:
+                    os.remove(req_file_path)
+                except PermissionError:
+                    pass
+                    # Leak temp file on Windows
 
 
 if __name__ == "__main__":
