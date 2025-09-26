@@ -29,7 +29,7 @@ if os.path.isfile(TIMESTAMP_FILE):
 hook_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Run the original hook
-subprocess.check_call(["uv", "run", os.path.join(hook_dir, "check-uv-lock-vulnerabilities.sh")])
+subprocess.check_call(["uv", "run", os.path.join(hook_dir, "check_uv_lock_vulnerabilities.py")])
 
 # Update timestamp
 with open(TIMESTAMP_FILE, "w") as f:
