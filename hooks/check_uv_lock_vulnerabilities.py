@@ -30,7 +30,11 @@ def check_vulnerabilities():
 
             # Run pip-audit
             sys.argv = ["pip-audit", "-r", req_file_path, "--progress-spinner", "on"]
-            audit()
+            try:
+                audit()
+            except SystemExit as e:
+                return e.code
+            return 0
         finally:
             if os.path.exists(req_file_path):
                 os.remove(req_file_path)
