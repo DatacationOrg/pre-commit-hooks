@@ -4,8 +4,18 @@ import time
 
 from hooks.check_uv_lock_vulnerabilities import check_vulnerabilities
 
-TIMESTAMP_FILE = ".git/.pre-commit-uv-lock-last-run"
-INTERVAL_HOURS = int(sys.argv[1]) if len(sys.argv) > 1 else 24
+TIMESTAMP_FILE = ".git/.pre-commit-check-uv-lock-vulnerabilities-daily-last-run"
+if len(sys.argv) > 1:
+    try:
+        INTERVAL_HOURS = int(sys.argv[1])
+    except ValueError:
+        print(
+            f"Invalid interval: '{sys.argv[1]}'. Please provide the interval in hours as an integer.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+else:
+    INTERVAL_HOURS = 24
 MIN_INTERVAL = INTERVAL_HOURS * 60 * 60
 
 
@@ -15,6 +25,10 @@ def should_run():
             with open(TIMESTAMP_FILE, "r") as f:
                 last_run = int(f.read().strip())
         except ValueError:
+            print(
+                f"Invalid timestamp in {TIMESTAMP_FILE}. Re-running the vulnerability scan.",
+                file=sys.stderr,
+            )
             last_run = 0
         now = int(time.time())
         if now - last_run < MIN_INTERVAL:
