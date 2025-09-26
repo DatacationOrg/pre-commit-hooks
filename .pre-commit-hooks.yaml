@@ -1,10 +1,10 @@
 - id: check-uv-lock-vulnerabilities
   name: Check uv.lock for vulnerabilities
   entry: hooks/check-uv-lock-vulnerabilities.py
-  language: script
+  language: python
   stages: [pre-commit]
 - id: check-uv-lock-vulnerabilities-daily
   name: Check uv.lock for vulnerabilities (only runs if last successful run was more than 24 hours ago)
   entry: hooks/check-uv-lock-vulnerabilities-daily.py
-  language: script
+  language: python
   stages: [pre-commit]
