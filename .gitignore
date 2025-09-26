@@ -10,5 +10,3 @@ __pycache__/
 .venv/
 env/
 venv/
-
-pre_commit_hooks.egg-info/
