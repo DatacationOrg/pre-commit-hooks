@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+
 from hooks.check_uv_lock_vulnerabilities import check_vulnerabilities
 
 TIMESTAMP_FILE = ".git/.pre-commit-uv-lock-last-run"
@@ -29,9 +30,15 @@ def update_timestamp():
         f.write(str(int(time.time())))
 
 
-if should_run():
-    ret = check_vulnerabilities()
-    update_timestamp()
-    sys.exit(ret)
-else:
-    sys.exit(0)
+def main():
+    if should_run():
+        ret = check_vulnerabilities()
+        if ret == 0:
+            update_timestamp()
+        sys.exit(ret)
+    else:
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
