@@ -29,7 +29,7 @@ def check_vulnerabilities():
                         f.write(line)
 
             # Run pip-audit
-            sys.argv = ["pip-audit", "-r", req_file_path, "--progress-spinner", "on"]
+            sys.argv = ["pip-audit", "-r", req_file_path]
             try:
                 audit()
             except SystemExit as e:
