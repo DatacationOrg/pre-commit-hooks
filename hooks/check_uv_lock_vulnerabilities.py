@@ -29,7 +29,7 @@ def check_vulnerabilities():
                         f.write(line)
 
             # Run pip-audit
-            sys.argv = ["pip-audit", "-r", req_file_path]
+            sys.argv = ["pip-audit", "-r", req_file_path, "--disable-pip", "--require-hashes"]
             try:
                 audit()
             except SystemExit as e:
