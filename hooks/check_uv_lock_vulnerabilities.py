@@ -29,7 +29,13 @@ def check_vulnerabilities():
                         f.write(line)
 
             # Run pip-audit
-            sys.argv = ["pip-audit", "-r", req_file_path]
+            sys.argv = [
+                "pip-audit",
+                "-r",
+                req_file_path,
+                "--disable-pip",
+                "--require-hashes",
+            ]
             try:
                 audit()
             except SystemExit as e:
@@ -44,5 +50,9 @@ def check_vulnerabilities():
                     # Leak temp file on Windows
 
 
-if __name__ == "__main__":
+def main():
     sys.exit(check_vulnerabilities())
+
+
+if __name__ == "__main__":
+    main()
