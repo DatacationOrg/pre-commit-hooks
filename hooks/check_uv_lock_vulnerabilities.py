@@ -1,11 +1,11 @@
-import subprocess
-import tempfile
 import os
+import subprocess
 import sys
+import tempfile
 from pip_audit._cli import audit
 
 
-def check_vulnerabilities():
+def check_vulnerabilities() -> int | str | None:
     # Create a temporary requirements file
     with tempfile.NamedTemporaryFile(
         mode="w+", suffix=".txt", delete=False
