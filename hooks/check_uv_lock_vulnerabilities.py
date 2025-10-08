@@ -24,7 +24,7 @@ def check_vulnerabilities() -> int | str | None:
         try:
             # Export requirements using uv
             subprocess.run(
-                ["uv", "export", "--format=requirements-txt"],
+                ["uv", "export", "--format=requirements-txt", "--all-groups", "--locked"],
                 stdout=req_file,
                 check=True,
             )
