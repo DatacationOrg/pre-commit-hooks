@@ -3,8 +3,8 @@ import subprocess
 import sys
 import tempfile
 import tomllib
-from pip_audit._cli import audit
 
+from pip_audit._cli import audit
 
 try:
     with open("pyproject.toml", "rb") as f:
@@ -24,19 +24,18 @@ def check_vulnerabilities() -> int | str | None:
         try:
             # Export requirements using uv
             subprocess.run(
-                ["uv", "export", "--format=requirements-txt", "--all-groups", "--locked"],
+                [
+                    "uv",
+                    "export",
+                    "--format=requirements-txt",
+                    "--all-groups",
+                    "--locked",
+                    "--no-emit-local",
+                ],
                 stdout=req_file,
                 check=True,
             )
             req_file.flush()
-
-            # Remove '-e .' if it exists
-            with open(req_file_path, "r") as f:
-                lines = f.readlines()
-            with open(req_file_path, "w") as f:
-                for line in lines:
-                    if line.strip() != "-e .":
-                        f.write(line)
 
             # Build pip-audit arguments
             args = [
