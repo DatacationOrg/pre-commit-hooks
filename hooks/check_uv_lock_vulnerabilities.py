@@ -2,7 +2,17 @@ import os
 import subprocess
 import sys
 import tempfile
+import tomllib
 from pip_audit._cli import audit
+
+
+try:
+    with open("pyproject.toml", "rb") as f:
+        config = tomllib.load(f)
+except FileNotFoundError:
+    config = {}
+# Extract ignore list (default to empty)
+ignore_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-vuln", [])
 
 
 def check_vulnerabilities() -> int | str | None:
@@ -28,14 +38,20 @@ def check_vulnerabilities() -> int | str | None:
                     if line.strip() != "-e .":
                         f.write(line)
 
-            # Run pip-audit
-            sys.argv = [
+            # Build pip-audit arguments
+            args = [
                 "pip-audit",
                 "-r",
                 req_file_path,
                 "--disable-pip",
                 "--require-hashes",
             ]
+            # Add ignore-vuln flags if any
+            for vuln in ignore_list:
+                args.extend(["--ignore-vuln", vuln])
+
+            # Run pip-audit
+            sys.argv = args
             try:
                 audit()
             except SystemExit as e:
