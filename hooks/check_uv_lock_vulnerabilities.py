@@ -1,11 +1,21 @@
-import subprocess
-import tempfile
 import os
+import subprocess
 import sys
+import tempfile
+import tomllib
+
 from pip_audit._cli import audit
 
+try:
+    with open("pyproject.toml", "rb") as f:
+        config = tomllib.load(f)
+except FileNotFoundError:
+    config = {}
+# Extract ignore list (default to empty)
+ignore_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-vuln", [])
 
-def check_vulnerabilities():
+
+def check_vulnerabilities() -> int | str | None:
     # Create a temporary requirements file
     with tempfile.NamedTemporaryFile(
         mode="w+", suffix=".txt", delete=False
@@ -14,28 +24,33 @@ def check_vulnerabilities():
         try:
             # Export requirements using uv
             subprocess.run(
-                ["uv", "export", "--format=requirements-txt"],
+                [
+                    "uv",
+                    "export",
+                    "--format=requirements-txt",
+                    "--all-groups",
+                    "--locked",
+                    "--no-emit-local",
+                ],
                 stdout=req_file,
                 check=True,
             )
             req_file.flush()
 
-            # Remove '-e .' if it exists
-            with open(req_file_path, "r") as f:
-                lines = f.readlines()
-            with open(req_file_path, "w") as f:
-                for line in lines:
-                    if line.strip() != "-e .":
-                        f.write(line)
-
-            # Run pip-audit
-            sys.argv = [
+            # Build pip-audit arguments
+            args = [
                 "pip-audit",
                 "-r",
                 req_file_path,
                 "--disable-pip",
                 "--require-hashes",
             ]
+            # Add ignore-vuln flags if any
+            for vuln in ignore_list:
+                args.extend(["--ignore-vuln", vuln])
+
+            # Run pip-audit
+            sys.argv = args
             try:
                 audit()
             except SystemExit as e:
