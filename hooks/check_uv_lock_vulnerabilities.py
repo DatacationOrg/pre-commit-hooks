@@ -12,8 +12,13 @@ try:
 except FileNotFoundError:
     config = {}
 # Extract ignore list (default to empty)
-ignore_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-vuln", [])
-
+ignore_vuln_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-vuln", [])
+# Extract packages to ignore (default to empty)
+ignore_package_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-package", [])
+ignore_package_arguments = []
+for ignore_package in ignore_package_list:
+    ignore_package_arguments.extend(["--no-emit-package", ignore_package])
+    
 
 def check_vulnerabilities() -> int | str | None:
     # Create a temporary requirements file
@@ -31,7 +36,7 @@ def check_vulnerabilities() -> int | str | None:
                     "--all-groups",
                     "--locked",
                     "--no-emit-local",
-                ],
+                ] + ignore_package_arguments,
                 stdout=req_file,
                 check=True,
             )
@@ -46,7 +51,7 @@ def check_vulnerabilities() -> int | str | None:
                 "--require-hashes",
             ]
             # Add ignore-vuln flags if any
-            for vuln in ignore_list:
+            for vuln in ignore_vuln_list:
                 args.extend(["--ignore-vuln", vuln])
 
             # Run pip-audit
