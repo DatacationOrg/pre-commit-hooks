@@ -13,6 +13,8 @@ Homepage = "https://github.com/datacation/pre-commit-hooks"
 [project.scripts]
 check-uv-lock-vulnerabilities = "hooks.check_uv_lock_vulnerabilities:main"
 check-uv-lock-vulnerabilities-daily = "hooks.check_uv_lock_vulnerabilities_daily:main"
+uv-audit = "hooks.uv_audit:main"
+uv-audit-daily = "hooks.uv_audit_daily:main"
 
 [build-system]
 build-backend = "hatchling.build"
@@ -20,3 +22,6 @@ requires = ["hatchling"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["hooks"]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

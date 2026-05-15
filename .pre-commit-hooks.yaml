@@ -10,3 +10,15 @@
   language: python
   files: ^uv\.lock$
   stages: [pre-commit]
+- id: uv-audit
+  name: Check uv.lock for vulnerabilities using uv audit
+  entry: uv-audit
+  language: python
+  files: ^uv\.lock$
+  stages: [pre-commit]
+- id: uv-audit-daily
+  name: Check uv.lock for vulnerabilities using uv audit (only runs if last successful run was more than 24 hours ago)
+  entry: uv-audit-daily
+  language: python
+  files: ^uv\.lock$
+  stages: [pre-commit]
