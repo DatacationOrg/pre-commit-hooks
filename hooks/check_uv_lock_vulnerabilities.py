@@ -1,73 +1,29 @@
-import os
 import subprocess
 import sys
-import tempfile
 import tomllib
 
-from pip_audit._cli import audit
 
-try:
-    with open("pyproject.toml", "rb") as f:
-        config = tomllib.load(f)
-except FileNotFoundError:
-    config = {}
-# Extract ignore list (default to empty)
-ignore_vuln_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-vuln", [])
-# Extract packages to ignore (default to empty)
-ignore_package_list = config.get("tool", {}).get("pip-audit", {}).get("ignore-package", [])
-ignore_package_arguments = []
-for ignore_package in ignore_package_list:
-    ignore_package_arguments.extend(["--no-emit-package", ignore_package])
-    
+def check_vulnerabilities() -> int:
+    try:
+        with open("pyproject.toml", "rb") as f:
+            config = tomllib.load(f)
+    except FileNotFoundError:
+        config = {}
 
-def check_vulnerabilities() -> int | str | None:
-    # Create a temporary requirements file
-    with tempfile.NamedTemporaryFile(
-        mode="w+", suffix=".txt", delete=False
-    ) as req_file:
-        req_file_path = req_file.name
-        try:
-            # Export requirements using uv
-            subprocess.run(
-                [
-                    "uv",
-                    "export",
-                    "--format=requirements-txt",
-                    "--all-groups",
-                    "--locked",
-                    "--no-emit-local",
-                ] + ignore_package_arguments,
-                stdout=req_file,
-                check=True,
-            )
-            req_file.flush()
+    # Extract ignore list from [tool.uv-audit] (default to empty)
+    audit_config = config.get("tool", {}).get("uv-audit", {})
+    ignore_vuln_list = audit_config.get("ignore", [])
 
-            # Build pip-audit arguments
-            args = [
-                "pip-audit",
-                "-r",
-                req_file_path,
-                "--disable-pip",
-                "--require-hashes",
-            ]
-            # Add ignore-vuln flags if any
-            for vuln in ignore_vuln_list:
-                args.extend(["--ignore-vuln", vuln])
+    # Build uv audit arguments
+    args = ["uv", "audit", "--frozen"]
 
-            # Run pip-audit
-            sys.argv = args
-            try:
-                audit()
-            except SystemExit as e:
-                return e.code
-            return 0
-        finally:
-            if os.path.exists(req_file_path):
-                try:
-                    os.remove(req_file_path)
-                except PermissionError:
-                    pass
-                    # Leak temp file on Windows
+    # Add ignore flags if any
+    for vuln in ignore_vuln_list:
+        args.extend(["--ignore", vuln])
+
+    # Run uv audit
+    result = subprocess.run(args)
+    return result.returncode
 
 
 def main():
