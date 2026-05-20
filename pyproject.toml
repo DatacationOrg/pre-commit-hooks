@@ -1,11 +1,11 @@
 [project]
 name = "pre-commit-hooks"
 version = "0.1.0"
-description = "Custom pre-commit hooks for checking Python dependency vulnerabilities with uv and pip-audit."
+description = "Custom pre-commit hooks for checking Python dependency vulnerabilities with uv audit."
 authors = [{ name = "Datacation", email = "info@datacation.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["pip-audit"]
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/datacation/pre-commit-hooks"
@@ -20,3 +20,6 @@ requires = ["hatchling"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["hooks"]
+
+[tool.uv]
+exclude-newer = "P7D"
